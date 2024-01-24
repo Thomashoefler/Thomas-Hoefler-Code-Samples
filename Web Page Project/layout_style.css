@@ -1,0 +1,17 @@
+header{grid-area:head;}
+nav{grid-area:nav;}
+main{grid-area:main;}
+section{grid-area:sec;}
+footer{grid-area: foot;}
+div.layout{display:grid; grid-gap: 0px;
+grid-template-areas:"head head"
+                    "nav  sec"
+                    "nav  main"
+                    "nav  foot";
+                    inset: 10%;
+                max-width: 1300px;
+                margin: auto;}
+li.nav{display: inline-block;}
+/*made an error page as well if you click my clothing links. I couldn't bring myself to change the web layout a ton.*/
+            
+

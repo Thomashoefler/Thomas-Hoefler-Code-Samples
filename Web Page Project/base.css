@@ -1,0 +1,4 @@
+article, aside, details, dl, figcaption, figure, footer,header,main,nav,section{display: block;}
+body{margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; padding-left:0px; padding-top: 0px; padding-bottom: 0; padding-right: 0;}
+p,h1,h2,h3,h4{margin-top: 0px; margin-bottom: 0px;margin-left: 0px;margin-right: 0px;padding-left: 5px;padding-top: 5px;padding-bottom: 5px;padding-right: 5px;}
+ul{margin-top: 0;margin-bottom: 0;}

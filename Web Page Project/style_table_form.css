@@ -1,0 +1,67 @@
+ 
+ .gridArea {
+   	    display: grid;
+   	    grid-template-columns: repeat(2, 1fr);
+  /*  grid-template-rows: repeat(8, 1fr);
+       grid-template-columns: repeat(auto-fill,minmax(900px,1fr));
+        grid-template-rows: repeat(auto-fill, 1fr);*/
+       grid-gap: 40px 20px;}
+ 
+ .row {
+ 	justify-self: center;
+ 	align-self: center;
+ 	text-align: center;
+ }     
+.center {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	width: 50%;
+	color: white;
+}
+)
+   	.table, th, td {
+   		display: block;
+   		text-align: center;
+   		color: white;
+      border: none;
+      height: 20px;
+      margin-left: auto;
+      margin-right: auto;
+}
+  caption {text-align: center;
+  	font-weight: bold
+  	}
+  
+  img {display: block;
+  	  margin-left: auto;
+      margin-right: auto;
+      }
+      
+ article {
+ 	background-size:120px 120px;
+ 	        background-color: light grey
+ 	        border-radius: 10px} 
+ 
+.button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+  border-radius: 10px;
+      height: 48px;
+    width: 200px;
+}
+
+.button1 {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
+tfoot.td {  text-align: center}

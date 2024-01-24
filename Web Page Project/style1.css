@@ -1,0 +1,14 @@
+body{font-family: Arial, Helvetica, sans-serif;font-size: 15;}  
+header{background: url(lostlands.jpg) 0px ;background-color: #5e7c7e; background-repeat: no-repeat;padding-left: 75px; height: 100px;background-size: cover;} 
+h1{font-family: Verdana, Helvetica, sans-serif; color:#83a136 ; letter-spacing: 5px;margin-bottom :0px;text-shadow: #5e7c7e 2px 2px;}
+h2{color:#afbe8d; padding-left: 5px;text-shadow: 2px 2px black ;}
+h4{margin-top: 0px; color: #43b330;}
+section{background: url(bubbles.jpg); box-sizing:border-box ;}
+main{background-color: lightgray;}
+footer{background-color:#ffedaa; font-size: x-small; text-align: center;}
+header,nav,main,footer{padding: 5px;}
+nav{background-color:#5e7c7e; text-shadow: 2px 2px black;}
+nav a{color: #83a136;text-decoration:none;font:14px;font:bold;font-family: fantasy; padding-left: 5px ;padding-right: 5px; padding-top: 3px;padding-bottom: 3px;}
+nav a:hover{color: #ffedaa; text-decoration: underline;}
+ul{list-style-image: url(audioblack.gif);}
+aside{width: 30%; float: right;background: #fff url('file') no-repeat left top;round: #fff url('file') no-repeat left top;round: linear-gradient(#83a136,#ffedaa);border-color: #5e7c7e; border-style: groove;border-width: 5px; border-radius: 15px; border-spacing: 10px; box-shadow: inset;}
