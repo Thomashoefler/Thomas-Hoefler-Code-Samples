@@ -1,0 +1,160 @@
+#!/usr/bin/python
+# script unzips a file and sanitizes each file in the zip, files contain a header and a trailer, don't process one if the files called index.dat 
+# removed all references to the school server and paths
+# LOGGING *****************************************************************************************************************
+
+class logger:
+    def __init__(self, logDataFile):
+        self.logDataFile = logDataFile
+        self.logTime = datetime.now().strftime("%Y%m%d-%H%M%S")
+        self.logName = "Files_Cleanup_{}_{}.log".format(self.logDataFile, self.logTime)
+
+    def log(self, label, message):
+        if label != '' and message != '':
+            logline = "{} [{}]: {}".format(datetime.now(),label.upper(),message)
+            print(logline)
+            with open (self.logName, 'a') as lg:
+                lg.write(logline+"\n")
+        else:
+            print("No message given!")
+
+    def clean(self):
+        if os.path.exists(self.logName):
+            try:
+                os.remove(self.logName)
+            except OSError:
+                print("Failed to remove the logfile.log")
+            else:
+                print("Successfully removed the logfile.log")
+
+
+# key='z:/samplecode/'
+# zipFile='FileSet.zip'
+# extractPath='z:/samplecode/extractedfiles/'
+
+
+
+# FUNCTIONS *****************************************************************************************************************
+
+def main():
+    # SCRIPT SETUP *****************************************************************************************************************
+    print("Running script...")
+    startTime = datetime.now()													# Get time
+
+    logger.log("info","Start time: {})".format(startTime))
+
+    # SCRIPT VARIABLES *****************************************************************************************************************
+															 
+    zip_time = zipFile.split('_',2)[2].split('.')[0]										# Get the timestamp from the zipfile
+    upLoadPath = "{}FileExtract/{}/".format(extractPath)
+    LogupLoadPath = "{}logs".format(extractPath)										# Log file upload folder location
+    tmpPath = "/tmp/{}_{}".format(zip_time)											# Server local temp folder path
+    currentWork = ""
+    scriptStatus = 'RUNNING'
+    etl_date=datetime.strptime(zip_time[:8], "%Y%m%d").date().strftime("%Y-%m-%d")
+
+    # try:
+    # SCRIPT START *****************************************************************************************************************
+    # PROCESSING ZIP FILES *****************************************************************************************************************
+
+    logger.log("info","Processing zip files...")
+    currentWork = "Processing zip files"										# The script status working on processing zip files
+    file_count = 0													# Counter for files
+    successful_file_count = 0												# Counter for total files
+    emptyFiles = []													# Initialize the emptyFiles object
+    nonEmptyFiles = []													# Initialize the nonEmptyFiles object
+    moduleStartTime = datetime.now()											# Processing zip files start time
+    dict_conf = {}
+    with zipfile.ZipFile(io.BytesIO(zip_obj.get()["Body"].read())) as z:
+        for filename in z.namelist():											# Iterate foreach file in the zipfile object
+            sanitizedData = ""
+
+            if (filename != 'INDEX.DAT') :										# Exclude the INDEX.dat file from being processed
+                fileTimeStart = datetime.now()											# Start the file time start
+                filename_base = filename.split('.')[0]										# Get the filename stripped of ext
+                filename_ext = filename.replace('.dat','.txt')								        # Get the filename with the txt ext
+
+                logger.log("info","\tWorking on [{}] [{}/{}]...".format(filename_base,file_count+1,len(z.namelist())))
+                logger.log("info","\t\tRemoving linebrakes and carraige returns...")
+                with z.open(filename) as myfile:
+                    sanitizedData = myfile.read().decode("utf-8").replace('\r\n', '').replace('\n', '').replace('\r', '').replace('|##|','\n').encode('utf-8')
+
+                # SANITIZING PROCESSED FILES *****************************************************************************************************************
+
+                fileTimeStart = datetime.now()											# File time start
+                line_count = 0													# Local counter variable
+                fileString=""													# Initialize local loop filestring variable
+                logger.log("info","\t\tSanitizing file...")
+                currentWork = "Sanitizing files"										# The script status working on sanitizing files
+                line_total = len(sanitizedData.splitlines(True))
+                mem_file = io.StringIO()
+                for line in sanitizedData.splitlines(True):
+                    if line_count == 1:
+                        line = line.decode("utf-8").strip().replace("H|*|", "ROW_NUM|*|",1).replace("|*|", "\001*\001").replace("|","").replace("\001*\001","|")
+                    else:
+                        line = (str(line_count-1)+"|*|"+line.decode("utf-8")).strip().replace("|*|", "\001*\001").replace("|","").replace("\001*\001","|")
+                        line = re.sub('(\d{4})\.(\d{2})\.(\d{2})', r'\1-\2-\3', line)
+
+                    if line_count != 0 and line_count+1 != line_total:
+
+                        if line_count+2 == line_total:
+                            mem_file.write(f"{line}")
+                        else:
+                            mem_file.write(f"{line}\n")
+
+                    line_count += 1															 # Increment counter by 1
+                    if line_count % 1000 == 0:
+                        logger.log("info","\t\t\tFile [{}] [{}/{}] finished line [{}/{}] [{}%]".format(filename,file_count+1,len(z.namelist()),line_count,line_total,line_count/line_total*100))
+                sanitizedData = None
+                logger.log("info","\t\t\tThere are [{}] lines in [{}]".format(line_count,filename))
+                logger.log("info","\t\tline_count: {}".format(line_count))
+
+                # if (line_count <= 3)):						  # Exclude files with no actuall data (files with just the 2 headers and 1 tail rows)
+                if (line_count <= 3):					                 # Exclude files with no actuall data  (files with just the 2 headers and 1 tail rows)
+                    logger.log("warning","\t\t\tRow count too low")
+                    emptyFiles.append(filename_base)										# Add working file to the emptyFile object
+                else:
+                    currentWork = "Uploading files"										   # The script status working on uploading
+
+                    mem_file_results = mem_file.getvalue()
+                    mem_file.close()
+                    sanitizedResults = io.BytesIO(mem_file_results.encode("utf-8")
+
+                    successful_file_count += 1										    	  # Increment successful file count by 1
+                    nonEmptyFiles.append(filename_base)										  # Add working file to the nonEmptyFile object
+                file_count += 1													  # Increment processed file count by 1
+                logger.log("info","\tWork completed on [{}] in [{}]".format(filename_base,(datetime.now() - fileTimeStart)))      
+
+
+    moduleEndTime = (datetime.now() - moduleStartTime)										  # Processing zip files end time
+    logger.log("info","Processing zip files complete. Processed [{}] zip files in [{}]".format(file_count,moduleEndTime))
+    scriptStatus = 'SUCCESS'													  # The script status as failed
+    moduleEndTime = (datetime.now() - moduleStartTime)										  # Sanitize and upload file end time
+    logger.log("info","Sanitizing and uploading files completed in [{}]".format(moduleEndTime))
+    logger.log("info","Number of files empty of data: [{}]".format(len(emptyFiles)))
+    logger.log("info","Number of files with data: [{}]".format(len(nonEmptyFiles)))
+    logger.log("info","Uploaded [{}] files out of the total processed files [{}] to [{}]".format(successful_file_count,file_count,upLoadPath))
+
+    #assigning the extract date from the ZIP file
+    extract_date=datetime.strptime(zip_time[:8], "%Y%m%d").date().strftime("%Y-%m-%d").strip()
+    dict_conf['file_type']=file_type
+    dict_conf['zip_file_name']=zipFile
+    dict_conf[dict_key]='upLoadPath
+    dict_conf['extract_date']=extract_date
+    dict_conf['extract_status']='complete'
+
+
+    # ERROR CAPTURE *****************************************************************************************************************
+    # except Exception as e:										                        # Capture any breaking errors
+    #     logger.log("error","Exception: "+str(e))
+    #     logger.log("error","Error occurred while performing: [{}]".format(currentWork))
+    #     scriptStatus = 'FAILED'												# The script status as failed
+
+    #     # SCRIPT END *****************************************************************************************************************
+    # finally:
+    endTime = (datetime.now() - startTime)													  # Get total script runtime
+    logger.log("info","Script finished with status: [{}].  Total run time: [{}]".format(scriptStatus, endTime))
+
+if __name__ == "__main__":
+    main()
+    print("done!")
